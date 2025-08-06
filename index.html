@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Ordina i Numeri</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .series { margin-bottom: 30px; }
+    .number { display: inline-block; padding: 10px 15px; margin: 5px; border: 1px solid #ccc; border-radius: 5px; cursor: move; background-color: #f8f8f8; }
+    .dropzone { border: 2px dashed #bbb; padding: 10px; min-height: 50px; margin-top: 10px; display: flex; flex-wrap: wrap; }
+    .btn-check { margin-top: 10px; }
+    .result { margin-top: 10px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Ordina i numeri dal più piccolo al più grande</h1>
+
+  <div id="container"></div>
+
+  <script>
+    const seriesData = [
+      ["7534211", "5039108", "293987", "6,18", "9215720", "72,25", "43,39", "408331", "1162707", "3952216"],
+      ["9226679", "98,97", "67,09", "1695971", "37,037", "5353514", "2388847", "18,7289", "509239", "5776796"],
+      ["66,824", "6676293", "41,953", "77,06", "3117233", "84,2", "3099541", "562617", "90,53", "9632638"]
+    ];
+
+    const container = document.getElementById("container");
+
+    seriesData.forEach((series, index) => {
+      const div = document.createElement("div");
+      div.className = "series";
+
+      const title = document.createElement("h3");
+      title.textContent = `Serie ${index + 1}`;
+
+      const dropzone = document.createElement("div");
+      dropzone.className = "dropzone";
+      dropzone.ondragover = e => e.preventDefault();
+      dropzone.ondrop = e => {
+        e.preventDefault();
+        const id = e.dataTransfer.getData("text/plain");
+        const draggedEl = document.getElementById(id);
+        dropzone.appendChild(draggedEl);
+      };
+
+      series.forEach((num, i) => {
+        const span = document.createElement("div");
+        span.className = "number";
+        span.textContent = num;
+        span.id = `serie${index}-num${i}`;
+        span.draggable = true;
+        span.ondragstart = e => e.dataTransfer.setData("text/plain", e.target.id);
+        dropzone.appendChild(span);
+      });
+
+      const button = document.createElement("button");
+      button.textContent = "Controlla";
+      button.className = "btn-check";
+      button.onclick = () => {
+        const nums = [...dropzone.children].map(n => parseFloat(n.textContent.replace(",", ".")));
+        const isSorted = nums.every((v, i, a) => i === 0 || a[i - 1] <= v);
+        result.textContent = isSorted ? "✅ Corretto!" : "❌ Da ricontrollare.";
+      };
+
+      const result = document.createElement("div");
+      result.className = "result";
+
+      div.appendChild(title);
+      div.appendChild(dropzone);
+      div.appendChild(button);
+      div.appendChild(result);
+      container.appendChild(div);
+    });
+  </script>
+</body>
+</html>
